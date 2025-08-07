@@ -141,7 +141,12 @@ if __name__ == '__main__':
     CFG.gen_dir = os.getenv('GEN_DIR')
     CFG.llm_dir = os.getenv('LLM_MODELS')
 
-    MODEL_PATH = str(Path(CFG.llm_dir) / CFG.model)
+    # Use Hugging Face model name directly if local path doesn't exist
+    local_model_path = Path(CFG.llm_dir) / CFG.model
+    if local_model_path.exists():
+        MODEL_PATH = str(local_model_path)
+    else:
+        MODEL_PATH = CFG.model  # Use HF model name directly
     print(f'MODEL_PATH: {MODEL_PATH}')
 
     # Seed everything
