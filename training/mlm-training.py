@@ -24,11 +24,16 @@ import math
 
 
 # Custom (cx) modules
-from utils import (load_cfg,
-                   debugger_is_active,
-                   seed_everything)
-from load_data import LoadData
-from create_datasets import mlm_tokenizer, group_texts
+# Add project root to Python path for package imports
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from src.utils import (load_cfg,
+                      debugger_is_active,
+                      seed_everything)
+from src.load_data import LoadData
+from src.create_datasets import mlm_tokenizer, group_texts
 
 
 ALL_LABELS = ['B-EMAIL', 'B-ID_NUM', 'B-NAME_STUDENT', 'B-PHONE_NUM',

@@ -1,11 +1,18 @@
-from gendata import (tokenize_with_spacy,
-                     assign_labels,
-                     create_token_map,
-                     verify_df)
-from utils import (load_cfg,
-                   debugger_is_active)
-from load_data import LoadData
-import create_datasets
+# Add project root to Python path for package imports
+import sys
+from pathlib import Path
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from src.gendata import (tokenize_with_spacy,
+                        assign_labels,
+                        create_token_map,
+                        verify_df)
+from src.utils import (load_cfg,
+                      debugger_is_active)
+from src.load_data import LoadData
+import src.create_datasets as create_datasets
 import unicodedata
 from typing import List
 import torch
@@ -120,6 +127,226 @@ def generate_noisy_phone_number():
         f"{noisy_p1} {noisy_p2} {noisy_p3}",
     ]
     return random.choice(formats)
+
+
+def generate_date_of_birth():
+    """Generate Korean date of birth in various formats for all age groups"""
+    # 1950-2025년 사이 생성 (모든 연령대 포함)
+    year = random.randint(1950, 2025)
+    month = random.randint(1, 12)
+    day = random.randint(1, 28)  # 간단히 28일까지만
+    
+    formats = [
+        f"{year}-{month:02d}-{day:02d}",
+        f"{year}.{month:02d}.{day:02d}",
+        f"{year}년 {month}월 {day}일",
+        f"{year%100:02d}{month:02d}{day:02d}",  # YYMMDD 형식
+        f"{year}/{month:02d}/{day:02d}",
+    ]
+    return random.choice(formats)
+
+
+def generate_age():
+    """Generate age in Korean format for all age groups"""
+    age = random.randint(0, 99)  # 모든 연령대 포함
+    
+    korean_numbers = {
+        1: '한', 2: '두', 3: '세', 4: '네', 5: '다섯', 6: '여섯', 7: '일곱', 8: '여덟', 9: '아홉', 10: '열',
+        11: '열한', 12: '열두', 13: '열세', 14: '열네', 15: '열다섯', 16: '열여섯', 17: '열일곱', 18: '열여덟', 19: '열아홉', 20: '스무',
+        21: '스물한', 22: '스물두', 23: '스물세', 24: '스물네', 25: '스물다섯', 26: '스물여섯', 27: '스물일곱', 28: '스물여덟', 29: '스물아홉', 30: '서른',
+        31: '서른한', 32: '서른두', 33: '서른세', 34: '서른네', 35: '서른다섯', 36: '서른여섯',
+        37: '서른일곱', 38: '서른여덟', 39: '서른아홉', 40: '마흔', 41: '마흔한', 42: '마흔두',
+        43: '마흔세', 44: '마흔네', 45: '마흔다섯', 46: '마흔여섯', 47: '마흔일곱', 48: '마흔여덟',
+        49: '마흔아홉', 50: '쉰', 60: '예순', 70: '일흔', 80: '여든', 90: '아흔'
+    }
+    
+    formats = []
+    
+    # 기본 형태
+    formats.extend([f"{age}세", f"{age}살"])
+    
+    # 한글 표현 (50세 이하 또는 10의 배수)
+    if age in korean_numbers:
+        formats.append(f"{korean_numbers[age]}살")
+    elif age < 50:
+        formats.append(f"{age}살")
+    elif age % 10 == 0 and age <= 90:
+        formats.append(f"{korean_numbers[age]}살")
+    
+    # 연령대 표현 (10세 이상만)
+    if age >= 10:
+        decade = age // 10
+        if decade == 1:
+            formats.extend([f"10대", f"십대"])
+        elif decade <= 9:
+            formats.extend([
+                f"{decade}0대",
+                f"{decade}0대 {'초반' if age%10 <= 3 else '중반' if age%10 <= 6 else '후반'}"
+            ])
+    
+    # 유아/어린이/청소년 표현
+    if age <= 7:
+        formats.extend([f"{age}살 유아", f"{age}세 어린이"])
+    elif age <= 12:
+        formats.append(f"{age}세 어린이")
+    elif age <= 19:
+        formats.extend([f"{age}세 청소년", f"10대"])
+    
+    return random.choice(formats)
+
+
+def generate_credit_card_info():
+    """Generate Korean credit card information"""
+    # 한국 주요 카드사 BIN
+    card_bins = {
+        '신한카드': ['4567', '5123', '4356'],
+        'KB국민카드': ['4789', '5234', '4234'],
+        '삼성카드': ['4123', '5345', '4445'],
+        '현대카드': ['4567', '5456', '4678'],
+        '롯데카드': ['4890', '5567', '4789'],
+        'BC카드': ['4321', '5678', '4890'],
+        '하나카드': ['4456', '5789', '4567'],
+        '우리카드': ['4678', '5890', '4123']
+    }
+    
+    card_company = random.choice(list(card_bins.keys()))
+    bin_code = random.choice(card_bins[card_company])
+    
+    # 나머지 12자리 생성
+    remaining = ''.join([str(random.randint(0, 9)) for _ in range(12)])
+    card_number = bin_code + remaining
+    
+    formats = [
+        f"{card_number[:4]}-{card_number[4:8]}-{card_number[8:12]}-{card_number[12:]}",
+        f"{card_number[:4]} {card_number[4:8]} {card_number[8:12]} {card_number[12:]}",
+        card_number,
+        f"{card_company} {card_number[:4]}-****-****-{card_number[12:]}"
+    ]
+    return random.choice(formats)
+
+
+def generate_banking_number():
+    """Generate Korean banking account numbers"""
+    banks = {
+        '국민은행': ['123', '456', '789'],
+        '신한은행': ['234', '567', '890'],
+        '우리은행': ['1002', '1005', '1008'],
+        'KB국민은행': ['456', '789', '012'],
+        '하나은행': ['333', '444', '555'],
+        '농협은행': ['301', '302', '303'],
+        '기업은행': ['001', '002', '003'],
+        '대구은행': ['504', '505', '506']
+    }
+    
+    bank = random.choice(list(banks.keys()))
+    prefix = random.choice(banks[bank])
+    
+    if bank in ['우리은행', '신한은행']:
+        # 우리은행, 신한은행: XXXX-XXX-XXXXXX
+        middle = str(random.randint(100, 999))
+        suffix = str(random.randint(100000, 999999))
+        account = f"{prefix}-{middle}-{suffix}"
+    else:
+        # 기타 은행: XXX-XXXXXX-XX-XXX
+        middle = str(random.randint(100000, 999999))
+        suffix1 = str(random.randint(10, 99))
+        suffix2 = str(random.randint(100, 999))
+        account = f"{prefix}-{middle}-{suffix1}-{suffix2}"
+    
+    formats = [
+        account,
+        account.replace('-', ''),
+        f"{bank} {account}",
+        account.replace('-', ' ')
+    ]
+    return random.choice(formats)
+
+
+def generate_organization_name():
+    """Generate Korean organization names"""
+    universities = [
+        '서울대학교', '연세대학교', '고려대학교', '성균관대학교', '한양대학교', '중앙대학교',
+        '경희대학교', '한국외국어대학교', '서강대학교', '이화여자대학교', '홍익대학교',
+        '건국대학교', '동국대학교', '국민대학교', '숭실대학교', '세종대학교'
+    ]
+    
+    companies = [
+        '삼성전자', 'LG전자', 'SK텔레콤', '현대자동차', '기아자동차', '포스코',
+        'KB금융그룹', '신한은행', '우리은행', '하나금융그룹', '롯데그룹', 'GS그룹',
+        '두산그룹', 'LS그룹', 'CJ그룹', '한화그룹', '대우조선해양', '현대중공업'
+    ]
+    
+    organizations = universities + companies
+    return random.choice(organizations)
+
+
+def generate_nationality():
+    """Generate nationality information"""
+    nationalities = [
+        '대한민국', '한국', '한국인', 'Korean', 'South Korean',
+        '중국', '중국인', 'Chinese', '일본', '일본인', 'Japanese',
+        '미국', '미국인', 'American', '캐나다', '캐나다인', 'Canadian',
+        '베트남', '베트남인', 'Vietnamese', '태국', '태국인', 'Thai'
+    ]
+    return random.choice(nationalities)
+
+
+def generate_date():
+    """Generate general dates in various formats"""
+    year = random.randint(2020, 2024)
+    month = random.randint(1, 12)
+    day = random.randint(1, 28)
+    
+    formats = [
+        f"{year}-{month:02d}-{day:02d}",
+        f"{year}.{month:02d}.{day:02d}",
+        f"{year}년 {month}월 {day}일",
+        f"{month}/{day}/{year}",
+        f"{day}.{month}.{year}",
+    ]
+    return random.choice(formats)
+
+
+def generate_gender():
+    """Generate gender information"""
+    genders = ['남성', '여성', '남자', '여자', 'Male', 'Female', 'M', 'F']
+    return random.choice(genders)
+
+
+def generate_medical_condition():
+    """Generate medical condition information"""
+    conditions = [
+        '고혈압', '당뇨병', '천식', '알레르기', '우울증', '불안장애',
+        '갑상선질환', '위염', '신장질환', '간질환', '심장병', '관절염',
+        '골다공증', '빈혈', '편두통', '불면증', 'ADHD', '자폐스펙트럼장애'
+    ]
+    return random.choice(conditions)
+
+
+def generate_password():
+    """Generate various password formats"""
+    # 일반적인 패스워드 패턴들
+    patterns = [
+        lambda: ''.join(random.choices(string.ascii_letters + string.digits, k=random.randint(8, 12))),
+        lambda: f"{''.join(random.choices(string.ascii_letters, k=random.randint(4, 6)))}{random.randint(1000, 9999)}",
+        lambda: f"{''.join(random.choices(string.ascii_letters, k=random.randint(3, 5)))}{''.join(random.choices('!@#$%', k=1))}{random.randint(100, 999)}",
+        lambda: f"password{random.randint(123, 999)}",
+        lambda: f"{''.join(random.choices(['qwer', 'asdf', 'zxcv'], k=1))}{random.randint(1234, 9999)}",
+    ]
+    
+    return random.choice(patterns)()
+
+
+def generate_secure_credential():
+    """Generate secure credential information"""
+    creds = [
+        f"API-KEY-{random.randint(10000, 99999)}",
+        f"{''.join(random.choices(string.ascii_uppercase + string.digits, k=32))}",  # API Key
+        f"sk-{''.join(random.choices(string.ascii_letters + string.digits, k=48))}",  # OpenAI style
+        f"Bearer {''.join(random.choices(string.ascii_letters + string.digits, k=40))}",  # Bearer token
+        f"JWT-{''.join(random.choices(string.ascii_letters + string.digits, k=50))}",
+    ]
+    return random.choice(creds)
 
 
 def generate_korean_phone_number():
@@ -446,7 +673,9 @@ def generate_student_info():
     fake_url = generate_fake_social_media_url(first_name, last_name, algos[1])
     fake_email = generate_email(first_name, last_name, faker, algos[2])
     street_address = generate_street_address(fake=faker)
+    
     student = {}
+    # 기존 PII 항목들
     student['ID_NUM'] = get_userid()  # User ID
     student['NAME'] = first_name + " " + last_name
     student['EMAIL'] = fake_email
@@ -454,14 +683,42 @@ def generate_student_info():
     student['PHONE_NUM'] = generate_korean_phone_number()
     student['URL_PERSONAL'] = fake_url
     student['STREET_ADDRESS'] = street_address
+    
+    # 새로 추가된 PII 항목들
+    student['DATE_OF_BIRTH'] = generate_date_of_birth()
+    student['AGE'] = generate_age()
+    student['CREDIT_CARD_INFO'] = generate_credit_card_info()
+    student['BANKING_NUMBER'] = generate_banking_number()
+    
+    # 7:3 비율로 커스텀 함수 vs Faker 기본 함수 사용
+    if random.random() >= 0.3:
+        student['ORGANIZATION_NAME'] = faker.company()  # 70% 커스텀
+    else:
+        student['ORGANIZATION_NAME'] = generate_organization_name()  # 30% Faker
+    
+    student['NATIONALITY'] = generate_nationality()
+    
+    if random.random() >= 0.3:
+        student['DATE'] = generate_date()  # 70% 커스텀
+    else:
+        student['DATE'] = faker.date()  # 30% Faker
+    
+    student['GENDER'] = generate_gender()
+    student['MEDICAL_CONDITION'] = generate_medical_condition()
+    student['PASSWORD'] = generate_password()
+    student['SECURE_CREDENTIAL'] = generate_secure_credential()
+    
     del faker
     clear_memory()
 #     print(student)
     return student
 
 
-label_types = ['NAME', 'EMAIL', 'USERNAME', 'ID_NUM',
-               'PHONE_NUM', 'URL_PERSONAL', 'STREET_ADDRESS']
+label_types = ['NAME', 'EMAIL', 'USERNAME', 'ID_NUM', 'PHONE_NUM', 
+               'URL_PERSONAL', 'STREET_ADDRESS', 'DATE_OF_BIRTH', 'AGE',
+               'CREDIT_CARD_INFO', 'BANKING_NUMBER', 'ORGANIZATION_NAME',
+               'NATIONALITY', 'DATE', 'GENDER', 'MEDICAL_CONDITION',
+               'PASSWORD', 'SECURE_CREDENTIAL']
 
 if __name__ == '__main__':
     # Determine if running in debug mode

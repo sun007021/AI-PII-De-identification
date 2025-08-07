@@ -6,13 +6,18 @@ import random
 import re
 from typing import List
 import string
-from gendata_placeholder_mistral import (split_model_response,
-                                         pii_total_uniques,
-                                         pii_placeholders_cleaned,
-                                         tokenize_with_spacy,
-                                         token_labels,
-                                         inject_pii,
-                                         verify_df)
+# Add project root to Python path for package imports
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from src.gendata_placeholder_mistral import (split_model_response,
+                                            pii_total_uniques,
+                                            pii_placeholders_cleaned,
+                                            tokenize_with_spacy,
+                                            token_labels,
+                                            inject_pii,
+                                            verify_df)
 random.seed(42)
 
 

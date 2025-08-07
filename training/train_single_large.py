@@ -1,11 +1,20 @@
 # Setup Env. Variables
-from cxmetrics import train_metrics
-from cxmetrics import compute_metrics
-from utils import (load_cfg,
-                   debugger_is_active,
-                   seed_everything)
-from load_data import LoadData
-import create_datasets
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path for package imports
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from src.cxmetrics import train_metrics
+from src.cxmetrics import compute_metrics
+from src.utils import (load_cfg,
+                      debugger_is_active,
+                      seed_everything)
+from src.load_data import LoadData
+import src.create_datasets as create_datasets
 from pathlib import Path
 import json
 import argparse

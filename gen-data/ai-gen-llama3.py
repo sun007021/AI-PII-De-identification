@@ -1,5 +1,12 @@
-from utils import (load_cfg,
-                   debugger_is_active)
+# Add project root to Python path for package imports
+import sys
+from pathlib import Path
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from src.utils import (load_cfg,
+                      debugger_is_active)
 from faker import Faker  # generates fake data
 import ctypes
 import argparse
@@ -156,18 +163,26 @@ if __name__ == '__main__':
 
     # Generate Placeholder Text from LLM
     cols = ['IDENTIFICATION_NUM', 'STREET_ADDRESS', 'PHONE_NUM',
-            'USERNAME', 'URL_PERSONAL', 'EMAIL']
+            'USERNAME', 'URL_PERSONAL', 'EMAIL', 'DATE_OF_BIRTH', 'AGE',
+            'CREDIT_CARD_INFO', 'BANKING_NUMBER', 'ORGANIZATION_NAME',
+            'NATIONALITY', 'DATE', 'GENDER', 'MEDICAL_CONDITION',
+            'PASSWORD', 'SECURE_CREDENTIAL']
 
     writing_style = [
-        '에세이',
-        '비판적 분석 (인용과 참고문헌 포함)',
-        '제목 없는 블로그 글',
-        '몇 개의 단락 (제목 없음)'
+        '업무 보고서',
+        '프로젝트 계획서',
+        '회의록',
+        '제안서',
+        '분석 리포트',
+        '업무 메모',
+        '이메일',
+        '업무 질문',
+        '내부 문서'
     ]
     fields_used = []
     writing_styles = []
     for _ in range(CFG.generate_text.N):
-        fields_to_use = random.sample(cols, random.randint(1, 2))
+        fields_to_use = random.sample(cols, random.randint(2, 4))  # 2-4개 필드 사용
         random.shuffle(fields_to_use)
         fields_used.append(", ".join(['YOUR_NAME'] + fields_to_use))
         writing_styles.append(random.choice(writing_style))
@@ -219,12 +234,23 @@ if __name__ == '__main__':
 
         prompt_defs = {
             'YOUR_NAME': "성명",
-            'IDENTIFICATION_NUM': "온라인 학번",
-            'STREET_ADDRESS': "집 주소",
-            'PHONE_NUM': "개인 휴대폰 번호",
-            'USERNAME': "온라인 학생 사용자명",
-            'URL_PERSONAL': "개인 웹사이트 또는 소셜미디어 플랫폼",
-            'EMAIL': "개인 이메일 주소"}
+            'IDENTIFICATION_NUM': "사번/직원번호",
+            'STREET_ADDRESS': "주소",
+            'PHONE_NUM': "연락처",
+            'USERNAME': "사용자명/계정",
+            'URL_PERSONAL': "개인 웹사이트/SNS",
+            'EMAIL': "이메일 주소",
+            'DATE_OF_BIRTH': "생년월일",
+            'AGE': "나이",
+            'CREDIT_CARD_INFO': "신용카드 정보",
+            'BANKING_NUMBER': "계좌번호",
+            'ORGANIZATION_NAME': "소속 회사/기관명",
+            'NATIONALITY': "국적",
+            'DATE': "날짜 정보",
+            'GENDER': "성별",
+            'MEDICAL_CONDITION': "건강 상태",
+            'PASSWORD': "비밀번호",
+            'SECURE_CREDENTIAL': "보안 인증정보"}
 
         sys_pii = []
         for pii in data.prompt_pii.split('\n'):
