@@ -1,4 +1,10 @@
+naver.com
+daum.net
+hanmail.net
 gmail.com
+kakao.com
+korea.ac.kr
+yonsei.ac.kr
 yahoo.com
 outlook.com
 hotmail.com
@@ -49,9 +55,6 @@ live.ca
 telus.net
 sfr.fr
 mailinator.com
-daum.net
-naver.com
-hanmail.net
 gmx.net
 163.com
 sina.com

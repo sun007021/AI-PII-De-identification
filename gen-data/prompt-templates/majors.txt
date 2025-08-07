@@ -1,100 +1,100 @@
-Accounting
-Aerospace Engineering
-Anthropology
-Architecture
-Art History
-Biology
-Business Administration
-Chemical Engineering
-Chemistry
-Civil Engineering
-Communications
-Computer Science
-Criminal Justice
-Economics
-Education
-Electrical Engineering
-English
-Environmental Science
-Fashion Design
-Film Studies
-Finance
-Forensic Science
-Graphic Design
-History
-Hospitality Management
-Human Resources
-Information Technology
-International Relations
-Journalism
-Law
-Linguistics
-Management
-Marketing
-Mathematics
-Mechanical Engineering
-Music
-Nursing
-Nutrition
-Philosophy
-Photography
-Physics
-Political Science
-Psychology
-Public Health
-Public Relations
-Real Estate
-Social Work
-Sociology
-Software Engineering
-Sports Management
-Statistics
-Supply Chain Management
-Theater
-Theology
-Urban Planning
-Veterinary Science
-Web Development
-Wildlife Biology
-Zoology
-Actuarial Science
-Advertising
-Aerospace Studies
-African American Studies
-American Studies
-Animal Science
-Arabic Studies
-Asian Studies
-Astronomy
-Biochemistry
-Biomedical Engineering
-Biotechnology
-Ceramics
-Chinese Studies
-Classical Studies
-Cognitive Science
-Comparative Literature
-Computer Engineering
-Criminal Law
-Culinary Arts
-Dance
-Earth Science
-East Asian Studies
-Ecology
-Economics and Mathematics
-Engineering Physics
-Environmental Engineering
-Environmental Studies
-European Studies
-Film Production
-French Studies
-Gender Studies
-Geography
-Geology
-German Studies
-Global Studies
-Health Sciences
-Human Development
-Industrial Design
-Interior Design
-Italian Studies
+회계학
+항공우주공학
+인류학
+건축학
+미술사학
+생물학
+경영학
+화학공학
+화학
+토목공학
+커뮤니케이션학
+컴퓨터과학
+범죄학
+경제학
+교육학
+전기공학
+영어영문학
+환경과학
+패션디자인
+영화학
+금융학
+법의학
+그래픽디자인
+역사학
+호텔경영학
+인사관리학
+정보기술학
+국제관계학
+언론학
+법학
+언어학
+경영학
+마케팅학
+수학
+기계공학
+음악학
+간호학
+영양학
+철학
+사진학
+물리학
+정치학
+심리학
+보건학
+홍보학
+부동산학
+사회복지학
+사회학
+소프트웨어공학
+스포츠경영학
+통계학
+공급망관리학
+연극학
+신학
+도시계획학
+수의학
+웹개발학
+야생생물학
+동물학
+보험계리학
+광고학
+항공우주학
+아프리카계미국학
+미국학
+동물과학
+아랍학
+아시아학
+천문학
+생화학
+의생명공학
+생명공학
+도예학
+중국학
+고전학
+인지과학
+비교문학
+컴퓨터공학
+형법학
+요리학
+무용학
+지구과학
+동아시아학
+생태학
+경제수학
+공학물리학
+환경공학
+환경학
+유럽학
+영화제작학
+프랑스학
+젠더학
+지리학
+지질학
+독일학
+국제학
+보건과학
+인간발달학
+산업디자인
+실내디자인
+이탈리아학

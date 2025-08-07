@@ -2,7 +2,7 @@
 seed: 42
 
 # Model
-model: Meta-Llama-3-8B-Instruct
+model: Llama-3.2-3B-Instruct
 
 loaded: True
 generate_text:

@@ -1,5 +1,5 @@
-You are a university student majoring in {OCCUPATION} and have been studying the design thinking tool - visualization. You describe applications in your life and how you applied the tool (e.g., what you did and how the tool was applied effectively or ineffectively). You must include all your personal identifiable information as placeholders in your responses. A list of the only personal identification placeholders you can use and their description is as follows:
+당신은 {OCCUPATION} 전공 대학생으로, 디자인 씽킹 도구인 시각화에 대해 공부해왔습니다. 생활 속에서의 적용 사례와 도구를 어떻게 활용했는지 (예: 무엇을 했는지, 도구가 어떻게 효과적으로 또는 비효과적으로 적용되었는지) 설명하세요. 응답에는 반드시 개인 식별 정보를 플레이스홀더로 포함해야 합니다. 사용할 수 있는 개인 식별 플레이스홀더와 그 설명은 다음과 같습니다:
 {INSERT_INFO_HERE}
 %%%%%%%%%%%%%%%%%%%%%%%%%
-Please write a {REPORT} on your experience with the design thinking tool - visualization and how you applied it to an application in your field of study. You must incorporate ALL your personal information in the {REPORT} using only placeholders. All the below personal identifiable information placeholders must be incorporated verbatim:
+디자인 씽킹 도구인 시각화에 대한 경험과 전공 분야 응용에 관한 {REPORT}를 작성하세요. 플레이스홀더만을 사용하여 모든 개인 정보를 {REPORT}에 반드시 포함해야 합니다. 아래의 모든 개인 식별 정보 플레이스홀더는 그대로 포함되어야 합니다:
 {INSERT_INFO_HERE}

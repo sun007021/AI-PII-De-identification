@@ -60,6 +60,107 @@ def clear_memory():
     gc.collect()
 
 
+def generate_korean_text_phone_number():
+    """
+    '공일공-일이삼사-오육칠팔' 형식의 한글 전화번호를 생성합니다.
+    """
+    num_to_korean = {'0': '공', '1': '일', '2': '이', '3': '삼', '4': '사', '5': '오', '6': '육', '7': '칠', '8': '팔', '9': '구'}
+
+    p1 = "010"
+    p2 = f"{random.randint(0, 9999):04d}"
+    p3 = f"{random.randint(0, 9999):04d}"
+
+    korean_p1 = "".join([num_to_korean[n] for n in p1])
+    korean_p2 = "".join([num_to_korean[n] for n in p2])
+    korean_p3 = "".join([num_to_korean[n] for n in p3])
+
+    return f"{korean_p1}-{korean_p2}-{korean_p3}"
+
+
+def generate_noisy_phone_number():
+    """
+    '공l0-ㅣz34-00oㅇ' 형식의 한글/영어/숫자 혼합 전화번호를 생성합니다.
+    """
+    noisy_map = {
+        '0': ['0', '공', 'o', 'O', 'ㅇ'],
+        '1': ['1', '일', 'l', 'I', 'ㅣ'],
+        '2': ['2', '이', 'z', 'Z'],
+        '3': ['3', '삼', 'ㅅ', 'E'],
+        '4': ['4', '사', 'A'],
+        '5': ['5', '오', 'o', 'O', 's', 'S'],
+        '6': ['6', '육', 'b'],
+        '7': ['7', '칠', 'ㅊ'],
+        '8': ['8', '팔', 'ㅍ', 'B'],
+        '9': ['9', '구', 'ㄱ', 'g', 'q', 'p']
+    }
+    
+    # 기본 숫자 생성
+    if random.random() >= 0.1:
+        # 90% 휴대폰 번호
+        prefixes = ['010', '011', '016', '017', '018', '019']
+        prefix = random.choice(prefixes)
+        middle = f"{random.randint(0, 9999):04d}"
+        last = f"{random.randint(0, 9999):04d}"
+    else:
+        # 10% 지역번호
+        area_codes = ['02', '031', '032', '033', '041', '042', '043', '044', '051', '052', '053', '054', '055', '061', '062', '063', '064']
+        prefix = random.choice(area_codes)
+        middle = f"{random.randint(100, 999):03d}"
+        last = f"{random.randint(1000, 9999):04d}"
+    
+    # 변조된 문자로 변환
+    noisy_p1 = "".join([random.choice(noisy_map[d]) for d in prefix])
+    noisy_p2 = "".join([random.choice(noisy_map[d]) for d in middle])
+    noisy_p3 = "".join([random.choice(noisy_map[d]) for d in last])
+    
+    # 형식 랜덤 선택 (하이픈 있음/없음)
+    formats = [
+        f"{noisy_p1}-{noisy_p2}-{noisy_p3}",
+        f"{noisy_p1}{noisy_p2}{noisy_p3}",
+        f"{noisy_p1} {noisy_p2} {noisy_p3}",
+    ]
+    return random.choice(formats)
+
+
+def generate_korean_phone_number():
+    """Generate Korean phone number format with various styles including corrupted versions"""
+    phone_type = random.choice(['normal', 'korean_text', 'noisy'])
+    
+    if phone_type == 'korean_text':
+        return generate_korean_text_phone_number()
+    elif phone_type == 'noisy':
+        return generate_noisy_phone_number()
+    else:
+        # 일반 한국 전화번호 (기존 로직)
+        if random.random() >= 0.1:
+            # 90% 휴대폰 번호
+            prefixes = ['010', '011', '016', '017', '018', '019']
+            prefix = random.choice(prefixes)
+            middle = str(random.randint(1000, 9999))
+            last = str(random.randint(1000, 9999))
+            
+            # 형식 랜덤 선택 (하이픈 있음/없음/공백)
+            formats = [
+                f"{prefix}-{middle}-{last}",
+                f"{prefix}{middle}{last}",
+                f"{prefix} {middle} {last}",
+            ]
+            return random.choice(formats)
+        else:
+            # 10% 일반 전화번호 (지역번호)
+            area_codes = ['02', '031', '032', '033', '041', '042', '043', '044', '051', '052', '053', '054', '055', '061', '062', '063', '064']
+            area_code = random.choice(area_codes)
+            middle = str(random.randint(100, 999))
+            last = str(random.randint(1000, 9999))
+            
+            formats = [
+                f"{area_code}-{middle}-{last}",
+                f"{area_code}{middle}{last}",
+                f"{area_code} {middle} {last}",
+            ]
+            return random.choice(formats)
+
+
 def generate_street_address(fake):
     if random.random() >= 0.0:
         sa = str(fake.address()).replace("\n", random.choice([", ", " "]))
@@ -130,6 +231,8 @@ def social_media(username, prob):
         'GitHub': 'github.com/',
         'Facebook': 'facebook.com/',
         'Twitter': 'twitter.com/',
+        'KakaoStory': 'story.kakao.com/',
+        'Band': 'band.us/',
     }
 
     if random.random() >= prob:
@@ -289,10 +392,10 @@ def generate_email(first_name, last_name, faker, algo):
 
 def get_name():
     # Select the student country to generate the user info based on the country
-    COUNTRIES = ["en_US", "en_US", "en_US", "en_US", "en_US",
-                 "en_US", "en_US", "en_US", "en_US", "en_US",
-                 "en_US", "en_US", "en_US", "en_US", "en_US",
-                 "it_IT", "es_ES", "fr_FR"]
+    COUNTRIES = ["ko_KR", "ko_KR", "ko_KR", "ko_KR", "ko_KR",
+                 "ko_KR", "ko_KR", "ko_KR", "ko_KR", "ko_KR",
+                 "ko_KR", "ko_KR", "ko_KR", "ko_KR", "ko_KR",
+                 "ko_KR", "ko_KR", "ko_KR"]
     faker = Faker(random.choice(COUNTRIES))
     if random.randint(0, 100) >= 80:
         idx_first = random.randint(0, len(FIRSTNAME_REAL) - 1)
@@ -348,7 +451,7 @@ def generate_student_info():
     student['NAME'] = first_name + " " + last_name
     student['EMAIL'] = fake_email
     student['USERNAME'] = user_name
-    student['PHONE_NUM'] = faker.phone_number().replace(" ", "")
+    student['PHONE_NUM'] = generate_korean_phone_number()
     student['URL_PERSONAL'] = fake_url
     student['STREET_ADDRESS'] = street_address
     del faker

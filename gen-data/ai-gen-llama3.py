@@ -159,10 +159,10 @@ if __name__ == '__main__':
             'USERNAME', 'URL_PERSONAL', 'EMAIL']
 
     writing_style = [
-        'an essay',
-        'a critical analysis (with citations and references)',
-        'an untitled blog (i.e., without a title) ',
-        'a few paragraphs (without a title)'
+        '에세이',
+        '비판적 분석 (인용과 참고문헌 포함)',
+        '제목 없는 블로그 글',
+        '몇 개의 단락 (제목 없음)'
     ]
     fields_used = []
     writing_styles = []
@@ -218,13 +218,13 @@ if __name__ == '__main__':
         user_prompt = prompt.split('%%%%%%%%%%%%%%%%%%%%%%%%%')[1].strip()
 
         prompt_defs = {
-            'YOUR_NAME': "Full name",
-            'IDENTIFICATION_NUM': "Online student identification number",
-            'STREET_ADDRESS': "Home street address",
-            'PHONE_NUM': "Personal phone number",
-            'USERNAME': "Online student username",
-            'URL_PERSONAL': "Personal website or social medial platform",
-            'EMAIL': "Personal email address"}
+            'YOUR_NAME': "성명",
+            'IDENTIFICATION_NUM': "온라인 학번",
+            'STREET_ADDRESS': "집 주소",
+            'PHONE_NUM': "개인 휴대폰 번호",
+            'USERNAME': "온라인 학생 사용자명",
+            'URL_PERSONAL': "개인 웹사이트 또는 소셜미디어 플랫폼",
+            'EMAIL': "개인 이메일 주소"}
 
         sys_pii = []
         for pii in data.prompt_pii.split('\n'):
