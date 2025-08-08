@@ -56,7 +56,7 @@ def load_model(model_path: str, *, quantize: bool = False):
     return model_pipeline
 
 
-def generate_texts(pipeline, generated_df, path_save, batch_size=8):
+def generate_texts(pipeline, generated_df, path_save, batch_size=4):
     """배치 처리로 텍스트 생성"""
     
     terminators = [
@@ -100,9 +100,25 @@ def generate_texts(pipeline, generated_df, path_save, batch_size=8):
             )
             
             # 결과 저장
+            print(f"Debug: outputs type: {type(outputs)}, length: {len(outputs) if hasattr(outputs, '__len__') else 'N/A'}")
+            if len(outputs) > 0:
+                print(f"Debug: first output type: {type(outputs[0])}")
+                if hasattr(outputs[0], 'keys'):
+                    print(f"Debug: first output keys: {outputs[0].keys()}")
+            
             for i, output in enumerate(outputs):
                 original_idx = batch_indices[i]
-                generated_df.loc[original_idx, 'generated_text'] = output["generated_text"]
+                # output이 dict 형태인지 확인하고 처리
+                if isinstance(output, dict) and "generated_text" in output:
+                    generated_df.loc[original_idx, 'generated_text'] = output["generated_text"]
+                elif isinstance(output, list) and len(output) > 0 and isinstance(output[0], dict):
+                    generated_df.loc[original_idx, 'generated_text'] = output[0]["generated_text"]
+                else:
+                    print(f"Unexpected output format at index {i}: {type(output)}")
+                    # 가능한 모든 키 확인
+                    if hasattr(output, 'keys'):
+                        print(f"Available keys: {list(output.keys())}")
+                    generated_df.loc[original_idx, 'generated_text'] = str(output)
                 
         except Exception as e:
             print(f"Batch processing failed, falling back to individual processing: {e}")
