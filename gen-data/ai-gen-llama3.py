@@ -56,51 +56,88 @@ def load_model(model_path: str, *, quantize: bool = False):
     return model_pipeline
 
 
-def generate_texts(pipeline, generated_df, path_save):
-
-    # Generate the texts
-    for i in tqdm(range(len(generated_df))):
-        start = time.time()
-        # Get the prompt
-        prompt = generated_df.prompt.iloc[i]
-        max_new_tokens = generated_df['max_new_tokens'].iloc[i]
-        temperature = generated_df['temperature'].iloc[i]
-        top_p = generated_df['top_p'].iloc[i]
-        top_k = int(generated_df['top_k'].iloc[i])
-        repeat_penalty = generated_df['repetition_penalty'].iloc[i]
-        file_name = generated_df['file_name'].iloc[i]
-        writing_style = generated_df['writing_style'].iloc[i]
-        fields_used = generated_df['fields_used'].iloc[i]
-
-        # Tokenize the prompt
-        prompt = pipeline.tokenizer.apply_chat_template(
-            prompt,
-            tokenize=False,
-            add_generation_prompt=True
-        )
-
-        terminators = [
-            pipeline.tokenizer.eos_token_id,
-            pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>")
-        ]
-
-        # Generate the outputs from prompt
-        outputs = pipeline(
-            prompt,
-            max_new_tokens=max_new_tokens,
-            eos_token_id=terminators,
-            do_sample=True,
-            temperature=temperature,
-        )
-        # print(outputs[0]["generated_text"][len(prompt):])
-        generated_df.loc[i, 'generated_text'] = outputs[0]["generated_text"]
-
-        # Partial save of data
-        if i % 5 == 0:
+def generate_texts(pipeline, generated_df, path_save, batch_size=8):
+    """배치 처리로 텍스트 생성"""
+    
+    terminators = [
+        pipeline.tokenizer.eos_token_id,
+        pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>")
+    ]
+    
+    # 배치 단위로 데이터 분할
+    for batch_start in tqdm(range(0, len(generated_df), batch_size), desc="Processing batches"):
+        batch_end = min(batch_start + batch_size, len(generated_df))
+        batch_df = generated_df.iloc[batch_start:batch_end]
+        
+        start_time = time.time()
+        
+        # 배치 프롬프트 준비
+        batch_prompts = []
+        batch_indices = []
+        
+        for idx, (_, row) in enumerate(batch_df.iterrows()):
+            # 프롬프트 준비
+            prompt_text = pipeline.tokenizer.apply_chat_template(
+                row['prompt'],
+                tokenize=False,
+                add_generation_prompt=True
+            )
+            batch_prompts.append(prompt_text)
+            batch_indices.append(batch_start + idx)
+        
+        try:
+            # 배치 생성 - 동일한 매개변수 사용
+            first_row = batch_df.iloc[0]
+            outputs = pipeline(
+                batch_prompts,
+                max_new_tokens=first_row['max_new_tokens'],
+                eos_token_id=terminators,
+                do_sample=True,
+                temperature=first_row['temperature'],
+                top_p=first_row['top_p'],
+                batch_size=min(batch_size, len(batch_prompts)),
+                pad_token_id=pipeline.tokenizer.eos_token_id
+            )
+            
+            # 결과 저장
+            for i, output in enumerate(outputs):
+                original_idx = batch_indices[i]
+                generated_df.loc[original_idx, 'generated_text'] = output["generated_text"]
+                
+        except Exception as e:
+            print(f"Batch processing failed, falling back to individual processing: {e}")
+            # 개별 처리로 fallback
+            for i, (_, row) in enumerate(batch_df.iterrows()):
+                try:
+                    prompt_text = pipeline.tokenizer.apply_chat_template(
+                        row['prompt'],
+                        tokenize=False,
+                        add_generation_prompt=True
+                    )
+                    
+                    output = pipeline(
+                        prompt_text,
+                        max_new_tokens=row['max_new_tokens'],
+                        eos_token_id=terminators,
+                        do_sample=True,
+                        temperature=row['temperature'],
+                    )
+                    
+                    original_idx = batch_start + i
+                    generated_df.loc[original_idx, 'generated_text'] = output[0]["generated_text"]
+                    
+                except Exception as individual_error:
+                    print(f"Failed to generate text for index {batch_start + i}: {individual_error}")
+                    generated_df.loc[batch_start + i, 'generated_text'] = ""
+        
+        # 중간 저장 (매 5배치마다)
+        if (batch_start // batch_size) % 5 == 0:
             generated_df.to_csv(path_save, index=False, encoding="UTF-8")
-        print(
-            f"Complete the text for {i}-th student {time.time() - start: .1f} seconds")
-    # Save generated_df to csv
+        
+        batch_time = time.time() - start_time
+        print(f"Completed batch {batch_start//batch_size + 1} ({len(batch_df)} texts) in {batch_time:.1f} seconds")
+    
+    # 최종 저장
     generated_df.to_csv(path_save, index=False, encoding="UTF-8")
     print(f'Saved at: {path_save}')
 
